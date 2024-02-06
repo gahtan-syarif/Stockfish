@@ -192,6 +192,10 @@ int Eval::simple_eval(const Position& pos, Color c) {
          + (pos.non_pawn_material(c) - pos.non_pawn_material(~c));
 }
 
+int Eval::material_imbalance(const Position& pos, Color c) {
+    return 1.2 * PawnValue * (pos.count<PAWN>(c) - pos.count<PAWN>(~c))
+         + (pos.non_pawn_material(c) - pos.non_pawn_material(~c)) * 0.8;
+}
 
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
 // of the position from the point of view of the side to move.
@@ -203,10 +207,11 @@ Value Eval::evaluate(const Position& pos, int optimism) {
     Color stm        = pos.side_to_move();
     int   shuffling  = pos.rule50_count();
     int   simpleEval = simple_eval(pos, stm);
+    int   MaterialImbalance = material_imbalance(pos, stm);
 
     bool lazy = std::abs(simpleEval) > 2550;
     if (lazy)
-        v = simpleEval;
+        v = MaterialImbalance;
     else
     {
         bool smallNet = std::abs(simpleEval) > 1050;
@@ -215,7 +220,9 @@ Value Eval::evaluate(const Position& pos, int optimism) {
 
         Value nnue = smallNet ? NNUE::evaluate<NNUE::Small>(pos, true, &nnueComplexity)
                               : NNUE::evaluate<NNUE::Big>(pos, true, &nnueComplexity);
-
+        if(std::abs(simpleEval) > 2200) {
+          simpleEval=MaterialImbalance;
+        }
         // Blend optimism and eval with nnue complexity and material imbalance
         optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / 512;
         nnue -= nnue * (nnueComplexity + std::abs(simpleEval - nnue)) / 32768;
