@@ -204,7 +204,7 @@ Value Eval::evaluate(const Position& pos, int optimism) {
     int   shuffling  = pos.rule50_count();
     int   simpleEval = simple_eval(pos, stm);
 
-    bool lazy = std::abs(simpleEval) > 2550;
+    bool lazy = std::abs(simpleEval) > 2250;
     if (lazy)
         v = simpleEval;
     else
