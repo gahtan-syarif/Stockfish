@@ -743,18 +743,8 @@ Value Search::Worker::search(
                 ? ss->staticEval > (ss - 2)->staticEval
                 : (ss - 4)->staticEval != VALUE_NONE && ss->staticEval > (ss - 4)->staticEval;
 
-    // Step 7. Razoring (~1 Elo)
-    // If eval is really low check with qsearch if it can exceed alpha, if it can't,
-    // return a fail low.
-    // Adjust razor margin according to cutoffCnt. (~1 Elo)
-    if (eval < alpha - 450 - (332 - 160 * ((ss + 1)->cutoffCnt > 3)) * depth * depth)
-    {
-        value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
-        if (value < alpha)
-            return value;
-    }
 
-    // Step 8. Futility pruning: child node (~40 Elo)
+    // Step 7. Futility pruning: child node (~40 Elo)
     // The depth condition is important for mate finding.
     if (!ss->ttPv && depth < 11
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving)
@@ -764,7 +754,7 @@ Value Search::Worker::search(
         && (!ttMove || ttCapture))
         return beta > VALUE_TB_LOSS_IN_MAX_PLY ? (eval + beta) / 2 : eval;
 
-    // Step 9. Null move search with verification search (~35 Elo)
+    // Step 8. Null move search with verification search (~35 Elo)
     if (!PvNode && (ss - 1)->currentMove != Move::null() && (ss - 1)->statScore < 17379
         && eval >= beta && eval >= ss->staticEval && ss->staticEval >= beta - 21 * depth + 329
         && !excludedMove && pos.non_pawn_material(us) && ss->ply >= thisThread->nmpMinPly
@@ -805,7 +795,7 @@ Value Search::Worker::search(
         }
     }
 
-    // Step 10. Internal iterative reductions (~9 Elo)
+    // Step 9. Internal iterative reductions (~9 Elo)
     // For PV nodes without a ttMove, we decrease depth by 2,
     // or by 4 if the current position is present in the TT and
     // the stored depth is greater than or equal to the current depth.
@@ -822,7 +812,7 @@ Value Search::Worker::search(
 
     probCutBeta = beta + 182 - 68 * improving;
 
-    // Step 11. ProbCut (~10 Elo)
+    // Step 10. ProbCut (~10 Elo)
     // If we have a good enough capture (or queen promotion) and a reduced search returns a value
     // much above beta, we can (almost) safely prune the previous move.
     if (
@@ -879,7 +869,7 @@ Value Search::Worker::search(
 
 moves_loop:  // When in check, search starts here
 
-    // Step 12. A small Probcut idea, when we are in check (~4 Elo)
+    // Step 11. A small Probcut idea, when we are in check (~4 Elo)
     probCutBeta = beta + 446;
     if (ss->inCheck && !PvNode && ttCapture && (tte->bound() & BOUND_LOWER)
         && tte->depth() >= depth - 4 && ttValue >= probCutBeta
@@ -902,7 +892,7 @@ moves_loop:  // When in check, search starts here
     value            = bestValue;
     moveCountPruning = false;
 
-    // Step 13. Loop through all pseudo-legal moves until no moves remain
+    // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
     while ((move = mp.next_move(moveCountPruning)) != Move::none())
     {
@@ -945,7 +935,7 @@ moves_loop:  // When in check, search starts here
 
         Depth r = reduction(improving, depth, moveCount, delta);
 
-        // Step 14. Pruning at shallow depth (~120 Elo).
+        // Step 13. Pruning at shallow depth (~120 Elo).
         // Depth conditions are important for mate finding.
         if (!rootNode && pos.non_pawn_material(us) && bestValue > VALUE_TB_LOSS_IN_MAX_PLY)
         {
@@ -1005,7 +995,7 @@ moves_loop:  // When in check, search starts here
             }
         }
 
-        // Step 15. Extensions (~100 Elo)
+        // Step 14. Extensions (~100 Elo)
         // We take care to not overdo to avoid search getting stuck.
         if (ss->ply < thisThread->rootDepth * 2)
         {
@@ -1145,7 +1135,7 @@ moves_loop:  // When in check, search starts here
         // Decrease/increase reduction for moves with a good/bad history (~25 Elo)
         r -= ss->statScore / 14894;
 
-        // Step 17. Late moves reduction / extension (LMR, ~117 Elo)
+        // Step 15. Late moves reduction / extension (LMR, ~117 Elo)
         if (depth >= 2 && moveCount > 1 + rootNode)
         {
             // In general we want to cap the LMR depth search at newDepth, but when
@@ -1179,7 +1169,7 @@ moves_loop:  // When in check, search starts here
             }
         }
 
-        // Step 18. Full-depth search when LMR is skipped
+        // Step 16. Full-depth search when LMR is skipped
         else if (!PvNode || moveCount > 1)
         {
             // Increase reduction if ttMove is not present (~1 Elo)
@@ -1200,12 +1190,12 @@ moves_loop:  // When in check, search starts here
             value = -search<PV>(pos, ss + 1, -beta, -alpha, newDepth, false);
         }
 
-        // Step 19. Undo move
+        // Step 17. Undo move
         pos.undo_move(move);
 
         assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);
 
-        // Step 20. Check for a new best move
+        // Step 18. Check for a new best move
         // Finished searching the move. If a stop occurred, the return value of
         // the search cannot be trusted, and we return immediately without
         // updating best move, PV and TT.
