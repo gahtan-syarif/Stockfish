@@ -194,7 +194,7 @@ int Eval::simple_eval(const Position& pos, Color c) {
 
 int Eval::material_imbalance(const Position& pos, Color c) {
     return 1.2 * PawnValue * (pos.count<PAWN>(c) - pos.count<PAWN>(~c))
-         + (pos.non_pawn_material(c) - pos.non_pawn_material(~c)) * 0.8;
+         + (pos.non_pawn_material(c) - pos.non_pawn_material(~c));
 }
 
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
