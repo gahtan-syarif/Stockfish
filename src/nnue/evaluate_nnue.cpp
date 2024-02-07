@@ -188,7 +188,7 @@ void hint_common_parent_position(const Position& pos) {
 
 // Evaluation function. Perform differential calculation.
 template<NetSize Net_Size>
-Value evaluate(const Position& pos, bool adjusted, int* complexity) {
+Value evaluate(const Position& pos, bool adjusted) {
 
     // We manually align the arrays on the stack because with gcc < 9.3
     // overaligning stack variables with alignas() doesn't work correctly.
@@ -221,9 +221,6 @@ Value evaluate(const Position& pos, bool adjusted, int* complexity) {
     const auto positional = Net_Size == Small ? networkSmall[bucket]->propagate(transformedFeatures)
                                               : networkBig[bucket]->propagate(transformedFeatures);
 
-    if (complexity)
-        *complexity = std::abs(psqt - positional) / OutputScale;
-
     // Give more value to positional evaluation when adjusted flag is set
     if (adjusted)
         return static_cast<Value>(((1024 - delta) * psqt + (1024 + delta) * positional)
@@ -232,8 +229,8 @@ Value evaluate(const Position& pos, bool adjusted, int* complexity) {
         return static_cast<Value>((psqt + positional) / OutputScale);
 }
 
-template Value evaluate<Big>(const Position& pos, bool adjusted, int* complexity);
-template Value evaluate<Small>(const Position& pos, bool adjusted, int* complexity);
+template Value evaluate<Big>(const Position& pos, bool adjusted);
+template Value evaluate<Small>(const Position& pos, bool adjusted);
 
 struct NnueEvalTrace {
     static_assert(LayerStacks == PSQTBuckets);
