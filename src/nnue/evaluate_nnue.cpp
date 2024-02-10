@@ -180,7 +180,7 @@ write_parameters(std::ostream& stream, NetSize netSize, const std::string& netDe
 void hint_common_parent_position(const Position& pos) {
 
     int materialImbalance = material_imbalance(pos, pos.side_to_move());
-    if (std::abs(materialImbalance) > 1045)
+    if (std::abs(materialImbalance) > 1055)
         featureTransformerSmall->hint_common_access(pos);
     else
         featureTransformerBig->hint_common_access(pos);
