@@ -200,7 +200,7 @@ Value Eval::evaluate(const Position& pos, int optimism) {
     assert(!pos.checkers());
 
     int  materialImbalance = material_imbalance(pos, pos.side_to_move());
-    bool smallNet   = std::abs(materialImbalance) > 1000;
+    bool smallNet   = std::abs(materialImbalance) > 1045;
 
     int nnueComplexity;
 
