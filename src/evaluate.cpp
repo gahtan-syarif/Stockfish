@@ -188,7 +188,7 @@ void NNUE::verify(const OptionsMap&                                        optio
 // the point of view of the given color. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
 int Eval::simple_eval(const Position& pos, Color c) {
-    return PawnValue * (pos.count<PAWN>(c) - pos.count<PAWN>(~c))
+    return (PawnValue + 26 * (std::abs(pos.count<QUEEN>(c) - pos.count<QUEEN>(~c)) == 1) + 52 * (pos.count<QUEEN>() == 0)) * (pos.count<PAWN>(c) - pos.count<PAWN>(~c))
          + (pos.non_pawn_material(c) - pos.non_pawn_material(~c));
 }
 
