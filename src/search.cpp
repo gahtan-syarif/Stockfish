@@ -1110,6 +1110,10 @@ moves_loop:  // When in check, search starts here
         if (ttCapture)
             r++;
 
+        // Decrease reduction if givesCheck
+        if (givesCheck)
+            r-=2;
+        
         // Decrease reduction for PvNodes (~3 Elo)
         if (PvNode)
             r--;
