@@ -33,7 +33,6 @@ namespace Eval {
 
 std::string trace(Position& pos);
 
-int   simple_eval(const Position& pos, Color c);
 Value evaluate(const Position& pos, int optimism);
 
 // The default net name MUST follow the format nn-[SHA256 first 12 digits].nnue
