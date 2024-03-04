@@ -814,7 +814,7 @@ Value Search::Worker::search(
         return qsearch<PV>(pos, ss, alpha, beta);
 
     // For cutNodes without a ttMove, we decrease depth by 2 if depth is high enough.
-    if (cutNode && depth >= 8 && !ttMove)
+    if (cutNode && !ttMove)
         depth -= 2;
 
     // Step 11. ProbCut (~10 Elo)
