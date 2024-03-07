@@ -60,9 +60,6 @@ const unsigned int         gEmbeddedNNUESmallSize    = 1;
 
 
 namespace Stockfish {
-
-namespace Eval {
-
     int a1=512, b1=32768, c1=915, d1=9, e1=154, f1=1024, g1=200, h1=214;
     int a2=512, b2=32768, c2=915, d2=9, e2=154, f2=1024, g2=200, h2=214;
     int a3=512, b2=32768, c2=915, d3=9, e3=154, f3=1024, g3=200, h3=214;
@@ -72,6 +69,8 @@ namespace Eval {
     TUNE(SetRange(1, 2*a1), a1, SetRange(1, 2*b1), b1, SetRange(1, 2*f1), f1, SetRange(1, 2*h1), h1);
     TUNE(SetRange(1, 2*a2), a2, SetRange(1, 2*b2), b2, SetRange(1, 2*f2), f1, SetRange(1, 2*h2), h2);
     TUNE(SetRange(1, 2*a3), a3, SetRange(1, 2*b3), b3, SetRange(1, 2*f3), f3, SetRange(1, 2*h3), h3);
+namespace Eval {
+
 // Tries to load a NNUE network at startup time, or when the engine
 // receives a UCI command "setoption name EvalFile value nn-[a-z0-9]{12}.nnue"
 // The name of the NNUE network is always retrieved from the EvalFile option.
