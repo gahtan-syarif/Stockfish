@@ -67,7 +67,7 @@ namespace Stockfish {
     TUNE(c2, d2, e2, g2);
     TUNE(c3, d3, e3, g3);
     TUNE(SetRange(1, 2*a1), a1, SetRange(1, 2*b1), b1, SetRange(1, 2*f1), f1, SetRange(1, 2*h1), h1);
-    TUNE(SetRange(1, 2*a2), a2, SetRange(1, 2*b2), b2, SetRange(1, 2*f2), f1, SetRange(1, 2*h2), h2);
+    TUNE(SetRange(1, 2*a2), a2, SetRange(1, 2*b2), b2, SetRange(1, 2*f2), f2, SetRange(1, 2*h2), h2);
     TUNE(SetRange(1, 2*a3), a3, SetRange(1, 2*b3), b3, SetRange(1, 2*f3), f3, SetRange(1, 2*h3), h3);
 namespace Eval {
 
