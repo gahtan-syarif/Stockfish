@@ -200,11 +200,13 @@ Value Eval::evaluate(const Position& pos, int optimism) {
 
     Value nnue = smallNet ? NNUE::evaluate<NNUE::Small>(pos, true, &nnueComplexity, psqtOnly)
                           : NNUE::evaluate<NNUE::Big>(pos, true, &nnueComplexity, false);
-
-    // Blend optimism and eval with nnue complexity and material imbalance
-    optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / 512;
-    nnue -= nnue * (nnueComplexity + std::abs(simpleEval - nnue)) / 32768;
-
+    if (!psqtOnly)
+    {
+        // Blend optimism and eval with nnue complexity and material imbalance
+        optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / 512;
+        nnue -= nnue * (nnueComplexity + std::abs(simpleEval - nnue)) / 32768;
+    }
+  
     int npm = pos.non_pawn_material() / 64;
     int v   = (nnue * (915 + npm + 9 * pos.count<PAWN>()) + optimism * (154 + npm)) / 1024;
 
