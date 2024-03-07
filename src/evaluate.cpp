@@ -62,7 +62,7 @@ const unsigned int         gEmbeddedNNUESmallSize    = 1;
 namespace Stockfish {
     int a1=512, b1=32768, c1=915, d1=9, e1=154, f1=1024, g1=200, h1=214;
     int a2=512, b2=32768, c2=915, d2=9, e2=154, f2=1024, g2=200, h2=214;
-    int a3=512, b2=32768, c2=915, d3=9, e3=154, f3=1024, g3=200, h3=214;
+    int a3=512, b3=32768, c3=915, d3=9, e3=154, f3=1024, g3=200, h3=214;
     TUNE(c1, d1, e1, g1);
     TUNE(c2, d2, e2, g2);
     TUNE(c3, d3, e3, g3);
