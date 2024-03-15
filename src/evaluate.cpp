@@ -70,12 +70,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks& networks, const Position& pos, 
         v             = v * (178 - shuffling) / 204;
     }
     else if (psqtOnly){
-        // Blend optimism and eval with nnue complexity and material imbalance
-        optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / 517;
-        nnue -= nnue * (nnueComplexity + std::abs(simpleEval - nnue)) / 32857;
-
-        npm = pos.non_pawn_material() / 64;
-        v   = (nnue * (908 + npm + 7 * pos.count<PAWN>()) + optimism * (155 + npm)) / 1019;
+        v   = nnue;
 
         // Damp down the evaluation linearly when shuffling
         shuffling = pos.rule50_count();
