@@ -56,7 +56,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks& networks, const Position& pos, 
     int nnueComplexity;
 
     Value nnue = smallNet ? networks.small.evaluate(pos, true, &nnueComplexity, psqtOnly)
-                          : networks.big.evaluate(pos, true, &nnueComplexity, false)
+                          : networks.big.evaluate(pos, true, &nnueComplexity, false);
         
     // Blend optimism and eval with nnue complexity and material imbalance
     optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / (513 - 14 * smallNet + 18 * psqtOnly);
