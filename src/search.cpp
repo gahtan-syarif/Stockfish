@@ -758,15 +758,6 @@ Value Search::Worker::search(
             return value;
     }
 
-    // Step 8. Futility pruning: child node (~40 Elo)
-    // The depth condition is important for mate finding.
-    if (!ss->ttPv && depth < 12
-        && eval - futility_margin(depth, cutNode && !ss->ttHit, improving, opponentWorsening)
-               - (ss - 1)->statScore / 287
-             >= beta
-        && eval >= beta && eval < VALUE_TB_WIN_IN_MAX_PLY && (!ttMove || ttCapture))
-        return beta > VALUE_TB_LOSS_IN_MAX_PLY ? (eval + beta) / 2 : eval;
-
     // Step 9. Null move search with verification search (~35 Elo)
     if (!PvNode && (ss - 1)->currentMove != Move::null() && (ss - 1)->statScore < 16211
         && eval >= beta && eval >= ss->staticEval && ss->staticEval >= beta - 20 * depth + 314
@@ -958,21 +949,6 @@ moves_loop:  // When in check, search starts here
 
             if (capture || givesCheck)
             {
-                // Futility pruning for captures (~2 Elo)
-                if (!givesCheck && lmrDepth < 7 && !ss->inCheck)
-                {
-                    Piece capturedPiece = pos.piece_on(move.to_sq());
-                    int   futilityEval =
-                      ss->staticEval + 298 + 288 * lmrDepth + PieceValue[capturedPiece]
-                      + thisThread->captureHistory[movedPiece][move.to_sq()][type_of(capturedPiece)]
-                          / 7;
-                    if (futilityEval < alpha)
-                        continue;
-                }
-
-                // SEE based pruning for captures and checks (~11 Elo)
-                if (!pos.see_ge(move, -202 * depth))
-                    continue;
             }
             else
             {
@@ -982,26 +958,13 @@ moves_loop:  // When in check, search starts here
                   + (*contHist[3])[movedPiece][move.to_sq()]
                   + thisThread->pawnHistory[pawn_structure_index(pos)][movedPiece][move.to_sq()];
 
-                // Continuation history based pruning (~2 Elo)
-                if (lmrDepth < 6 && history < -4125 * depth)
-                    continue;
-
                 history += 2 * thisThread->mainHistory[us][move.from_to()];
 
                 lmrDepth += history / 5686;
 
-                // Futility pruning: parent node (~13 Elo)
-                if (!ss->inCheck && lmrDepth < 15
-                    && ss->staticEval + (bestValue < ss->staticEval - 55 ? 153 : 58)
-                           + 118 * lmrDepth
-                         <= alpha)
-                    continue;
 
                 lmrDepth = std::max(lmrDepth, 0);
 
-                // Prune moves with negative SEE (~4 Elo)
-                if (!pos.see_ge(move, -26 * lmrDepth * lmrDepth))
-                    continue;
             }
         }
 
@@ -1047,13 +1010,6 @@ moves_loop:  // When in check, search starts here
                         extension = 2;
                 }
 
-                // Multi-cut pruning
-                // Our ttMove is assumed to fail high based on the bound of the TT entry,
-                // and if after excluding the ttMove with a reduced search we fail high over the original beta,
-                // we assume this expected cut-node is not singular (multiple moves fail high),
-                // and we can prune the whole subtree by returning a softbound.
-                else if (singularBeta >= beta)
-                    return singularBeta;
 
                 // Negative extensions
                 // If other moves failed high over (ttValue - margin) without the ttMove on a reduced search,
@@ -1505,59 +1461,6 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
         capture    = pos.capture_stage(move);
 
         moveCount++;
-
-        // Step 6. Pruning
-        if (bestValue > VALUE_TB_LOSS_IN_MAX_PLY && pos.non_pawn_material(us))
-        {
-            // Futility pruning and moveCount pruning (~10 Elo)
-            if (!givesCheck && move.to_sq() != prevSq && futilityBase > VALUE_TB_LOSS_IN_MAX_PLY
-                && move.type_of() != PROMOTION)
-            {
-                if (moveCount > 2)
-                    continue;
-
-                futilityValue = futilityBase + PieceValue[pos.piece_on(move.to_sq())];
-
-                // If static eval + value of piece we are going to capture is much lower
-                // than alpha we can prune this move. (~2 Elo)
-                if (futilityValue <= alpha)
-                {
-                    bestValue = std::max(bestValue, futilityValue);
-                    continue;
-                }
-
-                // If static eval is much lower than alpha and move is not winning material
-                // we can prune this move. (~2 Elo)
-                if (futilityBase <= alpha && !pos.see_ge(move, 1))
-                {
-                    bestValue = std::max(bestValue, futilityBase);
-                    continue;
-                }
-
-                // If static exchange evaluation is much worse than what is needed to not
-                // fall below alpha we can prune this move.
-                if (futilityBase > alpha && !pos.see_ge(move, (alpha - futilityBase) * 4))
-                {
-                    bestValue = alpha;
-                    continue;
-                }
-            }
-
-            // We prune after the second quiet check evasion move, where being 'in check' is
-            // implicitly checked through the counter, and being a 'quiet move' apart from
-            // being a tt move is assumed after an increment because captures are pushed ahead.
-            if (quietCheckEvasions > 1)
-                break;
-
-            // Continuation history based pruning (~3 Elo)
-            if (!capture && (*contHist[0])[pos.moved_piece(move)][move.to_sq()] < 0
-                && (*contHist[1])[pos.moved_piece(move)][move.to_sq()] < 0)
-                continue;
-
-            // Do not search moves with bad enough SEE values (~5 Elo)
-            if (!pos.see_ge(move, -79))
-                continue;
-        }
 
         // Speculative prefetch as early as possible
         prefetch(tt.first_entry(pos.key_after(move)));
