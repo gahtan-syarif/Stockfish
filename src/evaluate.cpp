@@ -62,8 +62,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks& networks, const Position& pos, 
                                 int npmConstant, int evalDiv, int shufflingConstant,
                                 int shufflingDiv) {
         // Blend optimism and eval with nnue complexity and material imbalance
-        optimism += optimism * (nnueComplexity + 533) / optDiv;
-        nnue -= nnue * (nnueComplexity + std::abs(simpleEval - nnue)) / nnueDiv;
+        optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / optDiv;
+        nnue -= nnue * (nnueComplexity + 533) / nnueDiv;
 
         int npm = pos.non_pawn_material() / 64;
         v       = (nnue * (npm + pawnCountConstant + pawnCountMul * pos.count<PAWN>())
