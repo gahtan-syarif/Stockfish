@@ -54,7 +54,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks& networks, const Position& pos, 
     bool psqtOnly   = std::abs(simpleEval) > PsqtOnlyThreshold;
     int  nnueComplexity;
     int  v;
-
+    dbg_mean_of(psqtOnly);
     Value nnue = smallNet ? networks.small.evaluate(pos, true, &nnueComplexity, psqtOnly)
                           : networks.big.evaluate(pos, true, &nnueComplexity, false);
 
