@@ -64,7 +64,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks& networks, const Position& pos, 
         // Blend optimism and eval with nnue complexity and material imbalance
         optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / optDiv;
         nnue -= nnue * (nnueComplexity + std::abs(simpleEval - nnue)) / nnueDiv;
-
+        dbg_mean_of(nnue * (nnueComplexity + std::abs(simpleEval - nnue)) / nnueDiv);
         int npm = pos.non_pawn_material() / 64;
         v       = (nnue * (npm + pawnCountConstant + pawnCountMul * pos.count<PAWN>())
              + optimism * (npmConstant + npm))
