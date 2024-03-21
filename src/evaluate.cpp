@@ -69,7 +69,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks& networks, const Position& pos, 
         v       = (nnue * (npm + pawnCountConstant + pawnCountMul * pos.count<PAWN>())
              + optimism * (npmConstant + npm))
           / evalDiv;
-
+        dbg_mean_of(pos.count<PAWN>());
         // Damp down the evaluation linearly when shuffling
         int shuffling = pos.rule50_count();
         v             = v * (shufflingConstant - shuffling) / shufflingDiv;
