@@ -51,7 +51,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks& networks, const Position& pos, 
 
     int  simpleEval = simple_eval(pos, pos.side_to_move());
     bool smallNet   = std::abs(simpleEval) > SmallNetThreshold;
-    bool psqtOnly   = std::abs(simpleEval) > PsqtOnlyThreshold;
+    bool psqtOnly   = std::abs(simpleEval) > PsqtOnlyThreshold || pos.non_pawn_material() < 3378;
     int  nnueComplexity;
     int  v;
 
