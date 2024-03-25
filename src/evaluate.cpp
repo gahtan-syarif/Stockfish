@@ -58,12 +58,12 @@ Value Eval::evaluate(const Eval::NNUE::Networks& networks, const Position& pos, 
     Value nnue = smallNet ? networks.small.evaluate(pos, true, &nnueComplexity, psqtOnly)
                           : networks.big.evaluate(pos, true, &nnueComplexity, false);
 
-    const auto adjustEval = [&](int optDiv, int nnueDiv, int pawnCountConstant, int pawnCountMul,
+const auto adjustEval = [&](int optDiv, int nnueDiv, int pawnCountConstant, int pawnCountMul,
                                 int npmConstant, int evalDiv, int shufflingConstant,
                                 int shufflingDiv) {
         // Blend optimism and eval with nnue complexity and material imbalance
         optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / optDiv;
-        nnue -= nnue * (nnueComplexity + std::abs(simpleEval - nnue)) / nnueDiv;
+        nnue -= nnue * nnueComplexity / nnueDiv;// no parenthesis and 3/5 in nnueDiv argument
 
         int npm = pos.non_pawn_material() / 64;
         v       = (nnue * (npm + pawnCountConstant + pawnCountMul * pos.count<PAWN>())
@@ -76,11 +76,11 @@ Value Eval::evaluate(const Eval::NNUE::Networks& networks, const Position& pos, 
     };
 
     if (!smallNet)
-        adjustEval(513, 32395, 919, 11, 145, 1036, 178, 204);
+        adjustEval(513, 19437, 919, 11, 145, 1036, 178, 204);// 32395*3/5 = 19437
     else if (psqtOnly)
-        adjustEval(517, 32857, 908, 7, 155, 1019, 224, 238);
+        adjustEval(517,  19714 , 908, 7, 155, 1019, 224, 238);// 32857*3/5 = 19714.2
     else
-        adjustEval(499, 32793, 903, 9, 147, 1067, 208, 211);
+        adjustEval(499,  19676, 903, 9, 147, 1067, 208, 211);// 32793*3/5 = 19675.8
 
     // Guarantee evaluation does not hit the tablebase range
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
