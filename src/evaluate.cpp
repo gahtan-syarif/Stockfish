@@ -63,7 +63,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks& networks, const Position& pos, 
                                 int shufflingDiv) {
         // Blend optimism and eval with nnue complexity and material imbalance
 
-        optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / optDiv;
+        optimism += optimism * (nnueComplexity *5/3) / optDiv;
         nnue -= nnue * (nnueComplexity * 5 / 3) / nnueDiv;
               dbg_mean_of(optimism);
         dbg_stdev_of(optimism);
