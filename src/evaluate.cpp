@@ -65,7 +65,6 @@ Value Eval::evaluate(const Eval::NNUE::Networks& networks, const Position& pos, 
 
         optimism += optimism * (nnueComplexity *5/3) / optDiv;
         nnue -= nnue * (nnueComplexity * 5 / 3) / nnueDiv;
-              dbg_mean_of(optimism);
         dbg_stdev_of(optimism);
         int npm = pos.non_pawn_material() / 64;
         v       = (nnue * (npm + pawnCountConstant + pawnCountMul * pos.count<PAWN>())
