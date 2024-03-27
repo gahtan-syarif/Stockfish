@@ -33,8 +33,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-    int a=1007, b=964, c=975;
-    TUNE(a,b,c);
+    int a1=1007, b1=964, c1=975;
+    TUNE(a1,b1,c1);
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
