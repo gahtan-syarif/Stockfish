@@ -33,7 +33,8 @@
 #include "uci.h"
 
 namespace Stockfish {
-
+    int a=1007, b=964, c=975;
+    TUNE(a,b,c);
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
@@ -73,8 +74,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks& networks, const Position& pos, 
         int shuffling = pos.rule50_count();
         v             = v * (shufflingConstant - shuffling) / shufflingDiv;
     };
-    int a=1007, b=964, c=975;
-    TUNE(a,b,c);
+
     if (!smallNet)
         adjustEval(513, 32395, 1007, 145, 1036, 178, 204);
     else if (psqtOnly)
