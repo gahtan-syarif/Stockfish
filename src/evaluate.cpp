@@ -78,7 +78,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks& networks, const Position& pos, 
     if (!smallNet)
         adjustEval(513, 97185, 919, 11, 145, 1036, 178, 204);
     else if (psqtOnly)
-        adjustEval(517, 98571, 1, 7, 155, 1019, 224, 238);
+        adjustEval(517, 1, 908, 7, 155, 1019, 224, 238);
     else
         adjustEval(499, 98379, 903, 9, 147, 1067, 208, 211);
 
