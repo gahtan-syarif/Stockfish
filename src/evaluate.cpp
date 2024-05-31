@@ -80,6 +80,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     int material = 300 * pos.count<PAWN>() + 350 * pos.count<KNIGHT>() + 400 * pos.count<BISHOP>()
                  + 640 * pos.count<ROOK>() + 1200 * pos.count<QUEEN>();
 
+    dbg_mean_of(material);
+
     v = (nnue * (34300 + material) + optimism * (4400 + material)) / 35967;
 
     // Damp down the evaluation linearly when shuffling
