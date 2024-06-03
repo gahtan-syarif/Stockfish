@@ -59,7 +59,6 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     assert(!pos.checkers());
 
-    int  simpleEval = simple_eval(pos, pos.side_to_move());
     bool smallNet   = use_smallnet(pos);
     int  v;
 
